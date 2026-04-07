@@ -21,6 +21,7 @@
     --radius-lg: 12px;
     --up: #1D9E75;
     --down: #E24B4A;
+    --link: #185FA5;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -33,6 +34,7 @@
       --text-tertiary: #6b6b67;
       --border: rgba(255,255,255,0.1);
       --border-md: rgba(255,255,255,0.2);
+      --link: #85B7EB;
     }
   }
 
@@ -53,16 +55,16 @@
   .sl { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--text-tertiary); margin: 1.25rem 0 .6rem; }
 
   .mgrid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
-  @media(max-width: 600px) { .mgrid { grid-template-columns: repeat(2,1fr); } }
+  @media(max-width:600px) { .mgrid { grid-template-columns: repeat(2,1fr); } }
 
   .mc { background: var(--bg-secondary); border-radius: var(--radius-md); padding: .8rem 1rem; }
   .mlabel { font-size: 12px; color: var(--text-secondary); margin-bottom: 3px; }
   .mval { font-size: 20px; font-weight: 500; color: var(--text-primary); line-height: 1.2; }
   .msub { font-size: 12px; margin-top: 2px; }
 
-  .up { color: var(--up); }
+  .up   { color: var(--up); }
   .down { color: var(--down); }
-  .neu { color: var(--text-secondary); }
+  .neu  { color: var(--text-secondary); }
 
   .three-col {
     display: grid;
@@ -71,8 +73,8 @@
     margin-top: 12px;
     align-items: start;
   }
-  @media(max-width: 900px) { .three-col { grid-template-columns: 1fr 1fr; } }
-  @media(max-width: 600px) { .three-col { grid-template-columns: 1fr; } }
+  @media(max-width:900px) { .three-col { grid-template-columns: 1fr 1fr; } }
+  @media(max-width:600px) { .three-col { grid-template-columns: 1fr; } }
 
   .col { display: flex; flex-direction: column; gap: 12px; }
 
@@ -93,15 +95,18 @@
   .wl-col-title { font-size: 11px; font-weight: 500; color: var(--text-tertiary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .06em; }
   .wl-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: .5px solid var(--border); }
   .wl-row:last-child { border-bottom: none; }
-  .wl-t { font-size: 12px; font-weight: 500; color: var(--text-primary); }
+  .wl-t a { font-size: 12px; font-weight: 500; color: var(--link); text-decoration: none; }
+  .wl-t a:hover { text-decoration: underline; }
   .wl-c { font-size: 12px; font-weight: 500; }
 
   .srow { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: .5px solid var(--border); }
   .srow:last-child { border-bottom: none; }
-  .sticker { font-size: 12px; font-weight: 500; color: var(--text-primary); width: 44px; }
-  .sname { font-size: 11px; color: var(--text-secondary); flex: 1; }
+  .sticker { width: 44px; }
+  .sticker a { font-size: 12px; font-weight: 500; color: var(--link); text-decoration: none; }
+  .sticker a:hover { text-decoration: underline; }
+  .sname  { font-size: 11px; color: var(--text-secondary); flex: 1; }
   .sprice { font-size: 12px; font-weight: 500; color: var(--text-primary); width: 58px; text-align: right; }
-  .schg { font-size: 12px; width: 50px; text-align: right; }
+  .schg   { font-size: 12px; width: 50px; text-align: right; }
 
   .inrow { display: flex; gap: 6px; margin-top: 8px; }
   .inrow input { flex: 1; font-size: 12px; padding: 5px 8px; border: .5px solid var(--border-md); border-radius: var(--radius-md); background: var(--bg-primary); color: var(--text-primary); outline: none; }
@@ -110,9 +115,12 @@
   .abtn { font-size: 11px; padding: 4px 10px; border: .5px solid var(--border-md); border-radius: var(--radius-md); background: transparent; color: var(--text-secondary); cursor: pointer; white-space: nowrap; }
   .abtn:hover { background: var(--bg-secondary); }
 
+  /* News items */
   .ni { padding: 7px 0; border-bottom: .5px solid var(--border); }
   .ni:last-child { border-bottom: none; }
-  .nh { font-size: 12px; color: var(--text-primary); line-height: 1.35; margin-bottom: 2px; }
+  .nh { font-size: 12px; line-height: 1.35; margin-bottom: 2px; }
+  .nh a { color: var(--text-primary); text-decoration: none; }
+  .nh a:hover { color: var(--link); text-decoration: underline; }
   .nm { font-size: 11px; color: var(--text-tertiary); }
 
   .pill { display: inline-block; font-size: 9px; font-weight: 500; padding: 2px 6px; border-radius: 10px; margin-right: 3px; }
@@ -201,19 +209,19 @@
           <div class="wl-grid">
             <div>
               <div class="wl-col-title">Top winners</div>
-              <div class="wl-row"><span class="wl-t">SMCI</span><span class="wl-c up">+9.4%</span></div>
-              <div class="wl-row"><span class="wl-t">NVDA</span><span class="wl-c up">+6.1%</span></div>
-              <div class="wl-row"><span class="wl-t">ARM</span><span class="wl-c up">+5.3%</span></div>
-              <div class="wl-row"><span class="wl-t">PLTR</span><span class="wl-c up">+4.8%</span></div>
-              <div class="wl-row"><span class="wl-t">MSTR</span><span class="wl-c up">+4.2%</span></div>
+              <div class="wl-row"><span class="wl-t"><a href="https://finance.yahoo.com/quote/SMCI" target="_blank">SMCI</a></span><span class="wl-c up">+9.4%</span></div>
+              <div class="wl-row"><span class="wl-t"><a href="https://finance.yahoo.com/quote/NVDA" target="_blank">NVDA</a></span><span class="wl-c up">+6.1%</span></div>
+              <div class="wl-row"><span class="wl-t"><a href="https://finance.yahoo.com/quote/ARM" target="_blank">ARM</a></span><span class="wl-c up">+5.3%</span></div>
+              <div class="wl-row"><span class="wl-t"><a href="https://finance.yahoo.com/quote/PLTR" target="_blank">PLTR</a></span><span class="wl-c up">+4.8%</span></div>
+              <div class="wl-row"><span class="wl-t"><a href="https://finance.yahoo.com/quote/MSTR" target="_blank">MSTR</a></span><span class="wl-c up">+4.2%</span></div>
             </div>
             <div>
               <div class="wl-col-title">Top losers</div>
-              <div class="wl-row"><span class="wl-t">INTC</span><span class="wl-c down">-5.7%</span></div>
-              <div class="wl-row"><span class="wl-t">CVS</span><span class="wl-c down">-4.2%</span></div>
-              <div class="wl-row"><span class="wl-t">PFE</span><span class="wl-c down">-3.8%</span></div>
-              <div class="wl-row"><span class="wl-t">MPW</span><span class="wl-c down">-3.1%</span></div>
-              <div class="wl-row"><span class="wl-t">WBA</span><span class="wl-c down">-2.9%</span></div>
+              <div class="wl-row"><span class="wl-t"><a href="https://finance.yahoo.com/quote/INTC" target="_blank">INTC</a></span><span class="wl-c down">-5.7%</span></div>
+              <div class="wl-row"><span class="wl-t"><a href="https://finance.yahoo.com/quote/CVS" target="_blank">CVS</a></span><span class="wl-c down">-4.2%</span></div>
+              <div class="wl-row"><span class="wl-t"><a href="https://finance.yahoo.com/quote/PFE" target="_blank">PFE</a></span><span class="wl-c down">-3.8%</span></div>
+              <div class="wl-row"><span class="wl-t"><a href="https://finance.yahoo.com/quote/MPW" target="_blank">MPW</a></span><span class="wl-c down">-3.1%</span></div>
+              <div class="wl-row"><span class="wl-t"><a href="https://finance.yahoo.com/quote/WBA" target="_blank">WBA</a></span><span class="wl-c down">-2.9%</span></div>
             </div>
           </div>
         </div>
@@ -228,12 +236,12 @@
         <div class="sl" style="margin-top:0;">Watchlist</div>
         <div class="card">
           <div id="watchlist">
-            <div class="srow"><span class="sticker">NVDA</span><span class="sname">Nvidia</span><span class="sprice">$875.40</span><span class="schg up">+2.14%</span></div>
-            <div class="srow"><span class="sticker">MSFT</span><span class="sname">Microsoft</span><span class="sprice">$418.22</span><span class="schg up">+0.88%</span></div>
-            <div class="srow"><span class="sticker">AMZN</span><span class="sname">Amazon</span><span class="sprice">$182.55</span><span class="schg up">+1.02%</span></div>
-            <div class="srow"><span class="sticker">META</span><span class="sname">Meta</span><span class="sprice">$503.18</span><span class="schg down">-0.44%</span></div>
-            <div class="srow"><span class="sticker">TSLA</span><span class="sname">Tesla</span><span class="sprice">$172.38</span><span class="schg down">-1.87%</span></div>
-            <div class="srow"><span class="sticker">TSM</span><span class="sname">TSMC</span><span class="sprice">$138.60</span><span class="schg up">+1.55%</span></div>
+            <div class="srow"><span class="sticker"><a href="https://finance.yahoo.com/quote/NVDA" target="_blank">NVDA</a></span><span class="sname">Nvidia</span><span class="sprice">$875.40</span><span class="schg up">+2.14%</span></div>
+            <div class="srow"><span class="sticker"><a href="https://finance.yahoo.com/quote/MSFT" target="_blank">MSFT</a></span><span class="sname">Microsoft</span><span class="sprice">$418.22</span><span class="schg up">+0.88%</span></div>
+            <div class="srow"><span class="sticker"><a href="https://finance.yahoo.com/quote/AMZN" target="_blank">AMZN</a></span><span class="sname">Amazon</span><span class="sprice">$182.55</span><span class="schg up">+1.02%</span></div>
+            <div class="srow"><span class="sticker"><a href="https://finance.yahoo.com/quote/META" target="_blank">META</a></span><span class="sname">Meta</span><span class="sprice">$503.18</span><span class="schg down">-0.44%</span></div>
+            <div class="srow"><span class="sticker"><a href="https://finance.yahoo.com/quote/TSLA" target="_blank">TSLA</a></span><span class="sname">Tesla</span><span class="sprice">$172.38</span><span class="schg down">-1.87%</span></div>
+            <div class="srow"><span class="sticker"><a href="https://finance.yahoo.com/quote/TSM" target="_blank">TSM</a></span><span class="sname">TSMC</span><span class="sprice">$138.60</span><span class="schg up">+1.55%</span></div>
           </div>
           <div class="inrow">
             <input type="text" id="ticker-input" placeholder="Add ticker (e.g. AAPL)" />
@@ -245,15 +253,42 @@
       <div>
         <div class="sl">Market news</div>
         <div class="card">
-          <div class="ni"><div class="nh"><span class="pill pill-wh">White House</span>President signs EO targeting AI chip exports to adversarial nations</div><div class="nm">Reuters · 1h ago</div></div>
-          <div class="ni"><div class="nh"><span class="pill pill-pol">Politics</span>Senate advances spending bill; market watches debt ceiling resolution</div><div class="nm">Politico · 2h ago</div></div>
-          <div class="ni"><div class="nh"><span class="pill pill-dn">Fed</span>Fed signals fewer rate cuts in 2024 amid sticky inflation data</div><div class="nm">Reuters · 3h ago</div></div>
-          <div class="ni"><div class="nh"><span class="pill pill-wh">White House</span>New tariffs proposed on Chinese EV imports; auto stocks react</div><div class="nm">WSJ · 4h ago</div></div>
-          <div class="ni"><div class="nh"><span class="pill pill-up">Tech</span>Nvidia surpasses expectations with record datacenter revenue</div><div class="nm">Bloomberg · 5h ago</div></div>
-          <div class="ni"><div class="nh"><span class="pill pill-pol">Politics</span>House advances bill restricting foreign ownership near military bases</div><div class="nm">The Hill · 6h ago</div></div>
-          <div class="ni"><div class="nh"><span class="pill pill-neu">Macro</span>Jobs report: 275K payrolls added in February, labor market resilient</div><div class="nm">WSJ · 7h ago</div></div>
-          <div class="ni"><div class="nh"><span class="pill pill-wh">White House</span>Treasury Secretary comments on dollar strength ahead of G7</div><div class="nm">FT · 9h ago</div></div>
-          <div class="ni"><div class="nh"><span class="pill pill-up">Earnings</span>Meta beats Q4 estimates; announces first-ever dividend</div><div class="nm">CNBC · 10h ago</div></div>
+          <div class="ni">
+            <div class="nh"><span class="pill pill-wh">White House</span><a href="https://www.reuters.com" target="_blank">President signs EO targeting AI chip exports to adversarial nations</a></div>
+            <div class="nm">Reuters · 1h ago</div>
+          </div>
+          <div class="ni">
+            <div class="nh"><span class="pill pill-pol">Politics</span><a href="https://www.politico.com" target="_blank">Senate advances spending bill; market watches debt ceiling resolution</a></div>
+            <div class="nm">Politico · 2h ago</div>
+          </div>
+          <div class="ni">
+            <div class="nh"><span class="pill pill-dn">Fed</span><a href="https://www.reuters.com" target="_blank">Fed signals fewer rate cuts in 2024 amid sticky inflation data</a></div>
+            <div class="nm">Reuters · 3h ago</div>
+          </div>
+          <div class="ni">
+            <div class="nh"><span class="pill pill-wh">White House</span><a href="https://www.wsj.com" target="_blank">New tariffs proposed on Chinese EV imports; auto stocks react</a></div>
+            <div class="nm">WSJ · 4h ago</div>
+          </div>
+          <div class="ni">
+            <div class="nh"><span class="pill pill-up">Tech</span><a href="https://www.bloomberg.com" target="_blank">Nvidia surpasses expectations with record datacenter revenue</a></div>
+            <div class="nm">Bloomberg · 5h ago</div>
+          </div>
+          <div class="ni">
+            <div class="nh"><span class="pill pill-pol">Politics</span><a href="https://thehill.com" target="_blank">House advances bill restricting foreign ownership near military bases</a></div>
+            <div class="nm">The Hill · 6h ago</div>
+          </div>
+          <div class="ni">
+            <div class="nh"><span class="pill pill-neu">Macro</span><a href="https://www.wsj.com" target="_blank">Jobs report: 275K payrolls added in February, labor market resilient</a></div>
+            <div class="nm">WSJ · 7h ago</div>
+          </div>
+          <div class="ni">
+            <div class="nh"><span class="pill pill-wh">White House</span><a href="https://www.ft.com" target="_blank">Treasury Secretary comments on dollar strength ahead of G7</a></div>
+            <div class="nm">FT · 9h ago</div>
+          </div>
+          <div class="ni">
+            <div class="nh"><span class="pill pill-up">Earnings</span><a href="https://www.cnbc.com" target="_blank">Meta beats Q4 estimates; announces first-ever dividend</a></div>
+            <div class="nm">CNBC · 10h ago</div>
+          </div>
         </div>
       </div>
 
@@ -378,8 +413,8 @@ function buildPerfChart(range) {
       maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 10 } } },
-        y: { grid: { color: gridColor }, ticks: { color: tickColor, font: { size: 10 }, callback: v => (v >= 0 ? '+' : '') + v.toFixed(1) + '%' } }
+        x: { grid:{color:gridColor}, ticks:{color:tickColor, font:{size:10}} },
+        y: { grid:{color:gridColor}, ticks:{color:tickColor, font:{size:10}, callback: v => (v >= 0 ? '+' : '') + v.toFixed(1) + '%'} }
       }
     }
   });
@@ -397,9 +432,10 @@ function addTicker() {
   const inp = document.getElementById('ticker-input');
   const val = inp.value.trim().toUpperCase();
   if (!val) return;
+  const url = `https://finance.yahoo.com/quote/${val}`;
   const row = document.createElement('div');
   row.className = 'srow';
-  row.innerHTML = `<span class="sticker">${val}</span><span class="sname">—</span><span class="sprice">—</span><span class="schg neu">—</span>`;
+  row.innerHTML = `<span class="sticker"><a href="${url}" target="_blank">${val}</a></span><span class="sname">—</span><span class="sprice">—</span><span class="schg neu">—</span>`;
   document.getElementById('watchlist').appendChild(row);
   inp.value = '';
 }
