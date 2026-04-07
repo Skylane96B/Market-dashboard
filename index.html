@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Market Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f3;
+    --bg-tertiary: #eeecea;
+    --text-primary: #1a1a18;
+    --text-secondary: #6b6b67;
+    --text-tertiary: #9a9a96;
+    --border: rgba(0,0,0,0.12);
+    --border-md: rgba(0,0,0,0.22);
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --up: #1D9E75;
+    --down: #E24B4A;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-primary: #1e1e1c;
+      --bg-secondary: #2a2a28;
+      --bg-tertiary: #333331;
+      --text-primary: #f0efe9;
+      --text-secondary: #a0a09c;
+      --text-tertiary: #6b6b67;
+      --border: rgba(255,255,255,0.1);
+      --border-md: rgba(255,255,255,0.2);
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 1.5rem;
+  }
+
+  .dash { max-width: 1100px; margin: 0 auto; }
+
+  .hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+  .hdrt { font-size: 20px; font-weight: 500; color: var(--text-primary); }
+  .hdrs { font-size: 12px; color: var(--text-tertiary); }
+
+  .sl { font-size: 11px; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--text-tertiary); margin: 1.5rem 0 .75rem; }
+
+  .mgrid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+  @media(max-width:600px){ .mgrid { grid-template-columns: repeat(2,1fr); } }
+
+  .mc { background: var(--bg-secondary); border-radius: var(--radius-md); padding: .85rem 1rem; }
+  .mlabel { font-size: 12px; color: var(--text-secondary); margin-bottom: 4px; }
+  .mval { font-size: 22px; font-weight: 500; color: var(--text-primary); line-height: 1.2; }
+  .msub { font-size: 12px; margin-top: 3px; }
+
+  .up { color: var(--up); }
+  .down { color: var(--down); }
+  .neu { color: var(--text-secondary); }
+
+  .two-col { display: grid; grid-template-columns: minmax(0,1.6fr) minmax(0,1fr); gap: 12px; margin-top: 12px; }
+  @media(max-width:700px){ .two-col { grid-template-columns: 1fr; } }
+
+  .card { background: var(--bg-primary); border: .5px solid var(--border); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 0; }
+
+  .tabrow { display: flex; gap: 4px; margin-bottom: 12px; }
+  .tab { font-size: 12px; padding: 4px 10px; border-radius: var(--radius-md); cursor: pointer; border: .5px solid transparent; color: var(--text-secondary); background: transparent; }
+  .tab:hover { background: var(--bg-secondary); }
+  .tab.active { background: var(--bg-secondary); border-color: var(--border); color: var(--text-primary); font-weight: 500; }
+
+  .heatmap { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 6px; }
+  @media(max-width:500px){ .heatmap { grid-template-columns: repeat(3,1fr); } }
+  .hcell { border-radius: var(--radius-md); padding: 10px 8px; text-align: center; cursor: pointer; transition: opacity .15s; }
+  .hcell:hover { opacity: .82; }
+  .hct { font-size: 11px; font-weight: 500; line-height: 1.3; }
+  .hcv { font-size: 13px; font-weight: 500; margin-top: 2px; }
+
+  .wl-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .wl-col-title { font-size: 11px; font-weight: 500; color: var(--text-tertiary); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .06em; }
+  .wl-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: .5px solid var(--border); }
+  .wl-row:last-child { border-bottom: none; }
+  .wl-t { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .wl-c { font-size: 13px; font-weight: 500; }
+
+  .srow { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: .5px solid var(--border); }
+  .srow:last-child { border-bottom: none; }
+  .sticker { font-size: 13px; font-weight: 500; color: var(--text-primary); width: 52px; }
+  .sname { font-size: 12px; color: var(--text-secondary); flex: 1; }
+  .sprice { font-size: 13px; font-weight: 500; color: var(--text-primary); width: 64px; text-align: right; }
+  .schg { font-size: 12px; width: 56px; text-align: right; }
+
+  .inrow { display: flex; gap: 8px; margin-top: 10px; }
+  .inrow input { flex: 1; font-size: 13px; padding: 6px 10px; border: .5px solid var(--border-md); border-radius: var(--radius-md); background: var(--bg-primary); color: var(--text-primary); outline: none; }
+  .inrow input:focus { box-shadow: 0 0 0 2px rgba(55,138,221,.35); }
+
+  .abtn { font-size: 12px; padding: 5px 12px; border: .5px solid var(--border-md); border-radius: var(--radius-md); background: transparent; color: var(--text-secondary); cursor: pointer; margin-top: 8px; }
+  .abtn:hover { background: var(--bg-secondary); }
+
+  .ni { padding: 8px 0; border-bottom: .5px solid var(--border); }
+  .ni:last-child { border-bottom: none; }
+  .nh { font-size: 13px; color: var(--text-primary); line-height: 1.4; margin-bottom: 2px; }
+  .nm { font-size: 11px; color: var(--text-tertiary); }
+
+  .pill { display: inline-block; font-size: 10px; font-weight: 500; padding: 2px 7px; border-radius: 10px; margin-right: 4px; }
+  .pill-up  { background: #E1F5EE; color: #0F6E56; }
+  .pill-dn  { background: #FCEBEB; color: #A32D2D; }
+  .pill-neu { background: var(--bg-secondary); color: var(--text-secondary); }
+  .pill-pol { background: #EEEDFE; color: #3C3489; }
+  .pill-wh  { background: #E6F1FB; color: #0C447C; }
+
+  .macro-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: .5px solid var(--border); }
+  .macro-row:last-child { border-bottom: none; }
+  .mn { font-size: 13px; color: var(--text-primary); }
+  .mv { font-size: 13px; font-weight: 500; }
+
+  .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .blabel { font-size: 12px; color: var(--text-secondary); width: 80px; flex-shrink: 0; }
+  .bbg { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .bfill { height: 100%; border-radius: 3px; }
+  .bval { font-size: 12px; color: var(--text-primary); width: 36px; text-align: right; }
+
+  .fg { text-align: center; padding: .5rem 0; }
+  .fgval { font-size: 36px; font-weight: 500; }
+  .fglabel { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+
+  .legend-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 12px; font-size: 11px; color: var(--text-tertiary); }
+  .legend-swatch { width: 12px; height: 12px; border-radius: 2px; display: inline-block; }
+
+  section-gap { display: block; height: 12px; }
+</style>
+</head>
+<body>
+<div class="dash">
+
+  <div class="hdr">
+    <div class="hdrt">Market Dashboard</div>
+    <div class="hdrs" id="live-time"></div>
+  </div>
+
+  <!-- Indices -->
+  <div class="sl">Market indices</div>
+  <div class="mgrid">
+    <div class="mc"><div class="mlabel">S&P 500</div><div class="mval">5,204</div><div class="msub up">+0.41% &nbsp;+21.3</div></div>
+    <div class="mc"><div class="mlabel">Nasdaq</div><div class="mval">16,248</div><div class="msub up">+0.61% &nbsp;+98.7</div></div>
+    <div class="mc"><div class="mlabel">Dow Jones</div><div class="mval">38,892</div><div class="msub down">-0.18% &nbsp;-70.1</div></div>
+    <div class="mc"><div class="mlabel">Russell 2000</div><div class="mval">2,048</div><div class="msub down">-0.32% &nbsp;-6.6</div></div>
+  </div>
+
+  <div class="two-col">
+    <!-- Left column -->
+    <div style="display:flex;flex-direction:column;gap:12px;">
+
+      <!-- Index chart -->
+      <div>
+        <div class="sl" style="margin-top:0;">Index performance</div>
+        <div class="card">
+          <div class="tabrow">
+            <button class="tab active" onclick="setRange(this,'1W')">1W</button>
+            <button class="tab" onclick="setRange(this,'1M')">1M</button>
+            <button class="tab" onclick="setRange(this,'3M')">3M</button>
+            <button class="tab" onclick="setRange(this,'YTD')">YTD</button>
+            <button class="tab" onclick="setRange(this,'1Y')">1Y</button>
+          </div>
+          <div style="display:flex;gap:16px;margin-bottom:10px;font-size:12px;color:var(--text-secondary);">
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#378ADD;display:inline-block;"></span>S&P 500</span>
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#1D9E75;display:inline-block;"></span>Nasdaq</span>
+            <span style="display:flex;align-items:center;gap:4px;"><span style="width:10px;height:10px;border-radius:2px;background:#888780;display:inline-block;"></span>Dow</span>
+          </div>
+          <div style="position:relative;height:200px;"><canvas id="perfChart"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Sector heatmap -->
+      <div>
+        <div class="sl">Sector heatmap</div>
+        <div class="card">
+          <div class="heatmap" id="heatmap"></div>
+          <div class="legend-row">
+            <span class="legend-swatch" style="background:#085041;"></span>Strong gain
+            <span class="legend-swatch" style="background:#5DCAA5;margin-left:6px;"></span>Gain
+            <span class="legend-swatch" style="background:#888780;margin-left:6px;"></span>Flat
+            <span class="legend-swatch" style="background:#F09595;margin-left:6px;"></span>Loss
+            <span class="legend-swatch" style="background:#A32D2D;margin-left:6px;"></span>Strong loss
+          </div>
+        </div>
+      </div>
+
+      <!-- Winners & Losers -->
+      <div>
+        <div class="sl">Winners &amp; losers</div>
+        <div class="card">
+          <div class="wl-grid">
+            <div>
+              <div class="wl-col-title">Top winners</div>
+              <div class="wl-row"><span class="wl-t">SMCI</span><span class="wl-c up">+9.4%</span></div>
+              <div class="wl-row"><span class="wl-t">NVDA</span><span class="wl-c up">+6.1%</span></div>
+              <div class="wl-row"><span class="wl-t">ARM</span><span class="wl-c up">+5.3%</span></div>
+              <div class="wl-row"><span class="wl-t">PLTR</span><span class="wl-c up">+4.8%</span></div>
+              <div class="wl-row"><span class="wl-t">MSTR</span><span class="wl-c up">+4.2%</span></div>
+            </div>
+            <div>
+              <div class="wl-col-title">Top losers</div>
+              <div class="wl-row"><span class="wl-t">INTC</span><span class="wl-c down">-5.7%</span></div>
+              <div class="wl-row"><span class="wl-t">CVS</span><span class="wl-c down">-4.2%</span></div>
+              <div class="wl-row"><span class="wl-t">PFE</span><span class="wl-c down">-3.8%</span></div>
+              <div class="wl-row"><span class="wl-t">MPW</span><span class="wl-c down">-3.1%</span></div>
+              <div class="wl-row"><span class="wl-t">WBA</span><span class="wl-c down">-2.9%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Watchlist -->
+      <div>
+        <div class="sl">Watchlist</div>
+        <div class="card">
+          <div id="watchlist">
+            <div class="srow"><span class="sticker">NVDA</span><span class="sname">Nvidia</span><span class="sprice">$875.40</span><span class="schg up">+2.14%</span></div>
+            <div class="srow"><span class="sticker">MSFT</span><span class="sname">Microsoft</span><span class="sprice">$418.22</span><span class="schg up">+0.88%</span></div>
+            <div class="srow"><span class="sticker">AMZN</span><span class="sname">Amazon</span><span class="sprice">$182.55</span><span class="schg up">+1.02%</span></div>
+            <div class="srow"><span class="sticker">META</span><span class="sname">Meta</span><span class="sprice">$503.18</span><span class="schg down">-0.44%</span></div>
+            <div class="srow"><span class="sticker">TSLA</span><span class="sname">Tesla</span><span class="sprice">$172.38</span><span class="schg down">-1.87%</span></div>
+            <div class="srow"><span class="sticker">TSM</span><span class="sname">TSMC</span><span class="sprice">$138.60</span><span class="schg up">+1.55%</span></div>
+          </div>
+          <div class="inrow">
+            <input type="text" id="ticker-input" placeholder="Add ticker (e.g. AAPL)" />
+            <button class="abtn" style="margin-top:0;" onclick="addTicker()">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- News -->
+      <div>
+        <div class="sl">Market news</div>
+        <div class="card">
+          <div class="ni"><div class="nh"><span class="pill pill-wh">White House</span>President signs executive order targeting AI chip exports to adversarial nations</div><div class="nm">Reuters · 1h ago</div></div>
+          <div class="ni"><div class="nh"><span class="pill pill-pol">Politics</span>Senate advances spending bill; market watches for debt ceiling resolution</div><div class="nm">Politico · 2h ago</div></div>
+          <div class="ni"><div class="nh"><span class="pill pill-dn">Fed</span>Fed signals fewer rate cuts in 2024 amid sticky inflation data</div><div class="nm">Reuters · 3h ago</div></div>
+          <div class="ni"><div class="nh"><span class="pill pill-wh">White House</span>Administration proposes new tariffs on Chinese EV imports; auto stocks react</div><div class="nm">WSJ · 4h ago</div></div>
+          <div class="ni"><div class="nh"><span class="pill pill-up">Tech</span>Nvidia surpasses expectations with record datacenter revenue driven by AI demand</div><div class="nm">Bloomberg · 5h ago</div></div>
+          <div class="ni"><div class="nh"><span class="pill pill-pol">Politics</span>House committee advances bill restricting foreign ownership of US farmland near military bases</div><div class="nm">The Hill · 6h ago</div></div>
+          <div class="ni"><div class="nh"><span class="pill pill-neu">Macro</span>Jobs report shows resilient labor market with 275K payrolls added in February</div><div class="nm">WSJ · 7h ago</div></div>
+          <div class="ni"><div class="nh"><span class="pill pill-wh">White House</span>Treasury Secretary comments on dollar strength policy ahead of G7 meeting</div><div class="nm">FT · 9h ago</div></div>
+          <div class="ni"><div class="nh"><span class="pill pill-up">Earnings</span>Meta beats Q4 estimates; announces first-ever dividend, shares surge</div><div class="nm">CNBC · 10h ago</div></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right column -->
+    <div style="display:flex;flex-direction:column;gap:12px;">
+
+      <!-- Macro -->
+      <div>
+        <div class="sl" style="margin-top:0;">Macro indicators</div>
+        <div class="card">
+          <div class="macro-row"><span class="mn">Fed funds rate</span><span class="mv neu">5.25–5.50%</span></div>
+          <div class="macro-row"><span class="mn">10Y Treasury</span><span class="mv down">4.38%</span></div>
+          <div class="macro-row"><span class="mn">2Y Treasury</span><span class="mv neu">4.71%</span></div>
+          <div class="macro-row"><span class="mn">Yield curve</span><span class="mv down">-0.33 (inv.)</span></div>
+          <div class="macro-row"><span class="mn">CPI (YoY)</span><span class="mv neu">3.1%</span></div>
+          <div class="macro-row"><span class="mn">Core PCE</span><span class="mv neu">2.8%</span></div>
+          <div class="macro-row"><span class="mn">Unemployment</span><span class="mv up">3.9%</span></div>
+          <div class="macro-row"><span class="mn">GDP growth</span><span class="mv up">3.2% (Q3)</span></div>
+          <div class="macro-row"><span class="mn">USD Index (DXY)</span><span class="mv neu">104.2</span></div>
+          <div class="macro-row"><span class="mn">WTI Crude</span><span class="mv down">$78.45/bbl</span></div>
+          <div class="macro-row"><span class="mn">Gold</span><span class="mv up">$2,312/oz</span></div>
+          <div class="macro-row"><span class="mn">BTC</span><span class="mv up">$68,240</span></div>
+        </div>
+      </div>
+
+      <!-- Sentiment -->
+      <div>
+        <div class="sl">Sentiment &amp; risk</div>
+        <div class="card">
+          <div class="fg">
+            <div class="fgval" style="color:#E24B4A;">38</div>
+            <div class="fglabel">Fear &amp; Greed Index — Fear</div>
+          </div>
+          <div style="margin-top:12px;">
+            <div class="bar-row"><span class="blabel">VIX</span><div class="bbg"><div class="bfill" style="width:42%;background:#E24B4A;"></div></div><span class="bval">18.4</span></div>
+            <div class="bar-row"><span class="blabel">Put/Call</span><div class="bbg"><div class="bfill" style="width:62%;background:#BA7517;"></div></div><span class="bval">0.82</span></div>
+            <div class="bar-row"><span class="blabel">52W highs</span><div class="bbg"><div class="bfill" style="width:55%;background:#1D9E75;"></div></div><span class="bval">54%</span></div>
+            <div class="bar-row"><span class="blabel">Above 200MA</span><div class="bbg"><div class="bfill" style="width:60%;background:#1D9E75;"></div></div><span class="bval">60%</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function updateTime(){
+  const e=document.getElementById('live-time');
+  if(e) e.textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'})+' ET';
+}
+updateTime(); setInterval(updateTime,1000);
+
+const sectors=[
+  {name:'Info Tech HW',val:2.2},{name:'Technology',val:1.8},{name:'Comm Svcs',val:0.9},{name:'Consumer Disc',val:0.6},
+  {name:'Financials',val:0.3},{name:'Industrials',val:0.1},{name:'Materials',val:-0.1},{name:'Consumer Staples',val:-0.2},
+  {name:'Healthcare',val:-0.4},{name:'Energy',val:-0.6},{name:'Utilities',val:-0.8},{name:'Real Estate',val:-1.1}
+];
+function sectorColor(v){
+  if(v>=1.5)return{bg:'#085041',tc:'#9FE1CB'};
+  if(v>=0.4)return{bg:'#5DCAA5',tc:'#085041'};
+  if(v>=-0.2)return{bg:'#888780',tc:'#F1EFE8'};
+  if(v>=-0.7)return{bg:'#F09595',tc:'#791F1F'};
+  return{bg:'#A32D2D',tc:'#F7C1C1'};
+}
+const hm=document.getElementById('heatmap');
+sectors.forEach(s=>{
+  const c=sectorColor(s.val);
+  const cell=document.createElement('div');
+  cell.className='hcell';
+  cell.style.background=c.bg;
+  const sign=s.val>=0?'+':'';
+  cell.innerHTML=`<div class="hct" style="color:${c.tc};">${s.name}</div><div class="hcv" style="color:${c.tc};">${sign}${s.val.toFixed(1)}%</div>`;
+  hm.appendChild(cell);
+});
+
+const rangeData={
+  '1W':{labels:['Mon','Tue','Wed','Thu','Fri'],sp:[5150,5162,5155,5178,5204],nq:[16050,16100,16080,16190,16248],dow:[39020,39010,38980,38940,38892]},
+  '1M':{labels:['W1','W2','W3','W4'],sp:[5050,5100,5150,5204],nq:[15600,15800,16000,16248],dow:[38200,38500,38700,38892]},
+  '3M':{labels:['Jan','Feb','Mar'],sp:[4800,5000,5204],nq:[14800,15400,16248],dow:[37200,38000,38892]},
+  'YTD':{labels:['Jan','Feb','Mar'],sp:[4800,5000,5204],nq:[14800,15400,16248],dow:[37200,38000,38892]},
+  '1Y':{labels:['Apr','Jun','Aug','Oct','Dec','Mar'],sp:[4200,4400,4600,4700,4800,5204],nq:[13000,13800,14500,15000,15400,16248],dow:[33500,34500,35500,36500,37500,38892]}
+};
+function normalize(a){const b=a[0];return a.map(v=>parseFloat(((v/b-1)*100).toFixed(2)));}
+
+const isDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+const gc=isDark?'rgba(255,255,255,0.07)':'rgba(0,0,0,0.07)';
+const tc=isDark?'#888':'#999';
+
+let perfChart;
+function buildPerfChart(range){
+  const d=rangeData[range];
+  if(perfChart) perfChart.destroy();
+  perfChart=new Chart(document.getElementById('perfChart'),{
+    type:'line',
+    data:{labels:d.labels,datasets:[
+      {label:'S&P 500',data:normalize(d.sp),borderColor:'#378ADD',borderWidth:2,pointRadius:2,tension:.4,fill:false},
+      {label:'Nasdaq',data:normalize(d.nq),borderColor:'#1D9E75',borderWidth:2,pointRadius:2,tension:.4,fill:false},
+      {label:'Dow',data:normalize(d.dow),borderColor:'#888780',borderWidth:1.5,pointRadius:2,tension:.4,fill:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{
+        x:{grid:{color:gc},ticks:{color:tc,font:{size:11}}},
+        y:{grid:{color:gc},ticks:{color:tc,font:{size:11},callback:v=>(v>=0?'+':'')+v.toFixed(1)+'%'}}
+      }}
+  });
+}
+function setRange(el,range){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  buildPerfChart(range);
+}
+buildPerfChart('1W');
+
+function addTicker(){
+  const inp=document.getElementById('ticker-input');
+  const val=inp.value.trim().toUpperCase();
+  if(!val) return;
+  const list=document.getElementById('watchlist');
+  const row=document.createElement('div');
+  row.className='srow';
+  row.innerHTML=`<span class="sticker">${val}</span><span class="sname">—</span><span class="sprice">—</span><span class="schg neu">—</span>`;
+  list.appendChild(row);
+  inp.value='';
+}
+</script>
+</body>
+</html>
